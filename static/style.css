@@ -1,0 +1,6 @@
+.jumbotron {
+	background-image: url("header.jpg");
+	background-position: bottom;
+	background-size: cover;
+	height: 400px;
+}
