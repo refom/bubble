@@ -34,9 +34,9 @@ def upload_file():
 
 		for file in files:
 			if file and allowed_file(file.filename):
-				file.save(os.path.join(app.config['UPLOAD_FOLDER'], file.filename))
-				# index_file = insertFile(file.filename)
-				# Keyword(filename, index_file)
+				path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+				file.save(path)
+				# setKeyword(path)
 
 		flash('File(s) successfully uploaded')
 		return redirect(request.url)
