@@ -1,65 +1,61 @@
-import os
-from bs4 import BeautifulSoup
+import os, pickle, re
+from bubble.strukturdata import AVL_Tree
 from bubble import app
+from bs4 import BeautifulSoup
 
-class Node(object):
-	def __init__(self, key, lokasi):
-		self.data  = [lokasi]
-		self.key   = key
-		self.left  = None
-		self.right = None
+KEYWORD_FILE = os.path.join(app.root_path, "static", "keyword.dll")
 
-def search(root, key):
-	pass
+def set_strukdat(teks, path):
+	# Root = None
+	r = None
+	keyword = AVL_Tree()
 
-def insert(root, key, lokasi):
-	if root is None:
-		return Node(key, lokasi)
+	# Check keyword file
+	if not os.path.exists(KEYWORD_FILE):
+		with open(KEYWORD_FILE, "wb") as kf:
+			pickle.dump(r, kf)
 	else:
-		if root.key == key:
-			root.data.append(lokasi)
-			return root
-		elif root.key < key:
-			root.right = insert(root.right, key)
-		else:
-			root.left = insert(root.left, key)
-	return root
+		with open(KEYWORD_FILE, "rb") as kf:
+			r = pickle.load(kf)
 
-def inorder(root):
-	if root:
-		inorder(root.left)
-		print(root.key)
-		inorder(root.right)
+	for key in teks:
+		r = keyword.insert(r, key, path)
 
-def listToString(x):
-	str = " "
-	return (str.join(x))
+	with open(KEYWORD_FILE, "wb") as kf:
+		pickle.dump(r, kf)
 
-def stringToList(x):
-	return list(x.split(" "))
 
-def setKeyword(path):
+def get_data():
+	with open(KEYWORD_FILE, "rb") as kf:
+		r = pickle.load(kf)
+	keyword = AVL_Tree()
+	keyword.search(r, "ROOT")
+
+def parser_teks(teks):
+	x = ""
+	for i in teks:
+		x += f"{i.text} "
+	x = re.sub("[\W_]", " ", x.lower())
+	return x.split()
+
+
+def set_keyword(path):
 	# Parser isinya
-	with open(path, "r") as f:
-		soup      = BeautifulSoup(f.read(), 'html.parser')
-		x = soup.find_all(["p", "title"])
+	with open(path, "r", encoding="utf8") as f:
+		soup = BeautifulSoup(f.read(), "html.parser")
+		x    = soup.find_all(["p", "title", "article"])
 
 	# Pembuatan keyword
-	x = listToString(x)
-	x = set(stringToList(x.lower()))
-	r = None
-	for key in x:
-		insert(r, key, path)
+	teks = set(parser_teks(x))
 
+	# Memasukkan ke dalam struktur data
+	set_strukdat(teks, path)
 
-
-
-	
-	
-
-
-
-
-
+def cek_key():
+	with open(KEYWORD_FILE, "rb") as kf:
+		r = pickle.load(kf)
+	keyword = AVL_Tree()
+	keylist = []
+	return keyword.get_preOrder(r, "ROOT", keylist)
 
 

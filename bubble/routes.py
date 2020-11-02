@@ -3,6 +3,7 @@ import os
 from flask import render_template, url_for, request, redirect, flash
 from bubble import app
 from bubble.forms import Search
+from bubble.ekstrak import *
 
 # Extension check
 ALLOWED_EXTENSIONS = set(['html'])
@@ -36,8 +37,14 @@ def upload_file():
 			if file and allowed_file(file.filename):
 				path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
 				file.save(path)
-				# setKeyword(path)
+				set_keyword(path)
 
 		flash('File(s) successfully uploaded')
 		return redirect(request.url)
+
+@app.route("/key", methods=['GET'])
+def cek_keyword():
+	keylist = cek_key()
+	return render_template('cek_keyword.html', keylist=keylist)
+
 
