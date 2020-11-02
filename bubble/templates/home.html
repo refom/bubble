@@ -38,7 +38,19 @@
 {% endblock header %}
 
 {% block content %}
-    
+<div class="container">
+	{% if datas %}
+		{% for data in datas %}
+			<div class="card">
+				<div class="card-body text-center">
+					<h4 class="card-title">
+						<a href={{ url_for("static", filename="data/{0}".format(data[1])) }}>{{ data[0] }}</a>
+					</h4>
+				</div>
+			</div>
+		{% endfor %}
+	{% endif %}
+</div>
 {% endblock content %}
 
 

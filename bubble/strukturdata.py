@@ -27,7 +27,8 @@ class AVL_Tree(object):
 			new_node.inputLoc(loc)
 			return new_node
 		elif root.key == key:
-			root.inputLoc(loc)
+			if not loc in root.loc:
+				root.inputLoc(loc)
 			return root
 		elif key < root.key:
 			root.left = self.insert(root.left, key, loc)

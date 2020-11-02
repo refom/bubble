@@ -27,7 +27,7 @@ def set_strukdat(teks, path):
 
 def get_data(keyword):
 	# Ambil keyword
-	keyword = re.sub("[\W_]", "", keyword.lower())
+	keyword = re.sub("[\W_]", " ", keyword.lower())
 
 	# Load keyword
 	with open(KEYWORD_FILE, "rb") as kf:
@@ -36,10 +36,14 @@ def get_data(keyword):
 	avlTree = AVL_Tree()
 	lokasi = []
 	# cari tiap keyword
-	for key in keyword:
+	for key in keyword.split():
 		dataNode = avlTree.search(r, key)
 		if dataNode:
-			lokasi = dataNode.loc + lokasi
+			for lok in dataNode.loc:
+				if not lok in lokasi:
+					lok = os.path.basename(lok)
+					name = os.path.splitext(lok)
+					lokasi.append([name[0], lok])
 
 	return lokasi
 
@@ -47,7 +51,7 @@ def parser_teks(teks):
 	x = ""
 	for i in teks:
 		x += f"{i.text} "
-	x = re.sub("[\W_]", "", x.lower())
+	x = re.sub("[\W_]", " ", x.lower())
 	return x.split()
 
 

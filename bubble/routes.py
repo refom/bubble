@@ -12,15 +12,20 @@ def allowed_file(filename):
 
 
 # Route
-@app.route("/", methods=['GET', 'POST'])
+@app.route("/")
 def index():
 	form = Search()
-	if form.validate_on_submit():
+	return render_template('home.html', form=form)
+
+@app.route("/", methods=['POST'])
+def search():
+	form = Search()
+	if request.method == 'POST':
 		# Kalau searchnya di pakai, disini search algoritmanya
 		keyword = form.keyword.data
 		data = get_data(keyword)
-		return redirect(request.url)
-	return render_template('home.html', form=form, data=data)
+	return render_template('home.html', form=form, datas=data)
+
 
 @app.route("/insert")
 def insert():
