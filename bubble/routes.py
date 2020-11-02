@@ -17,8 +17,10 @@ def index():
 	form = Search()
 	if form.validate_on_submit():
 		# Kalau searchnya di pakai, disini search algoritmanya
+		keyword = form.keyword.data
+		data = get_data(keyword)
 		return redirect(request.url)
-	return render_template('home.html', form=form)
+	return render_template('home.html', form=form, data=data)
 
 @app.route("/insert")
 def insert():

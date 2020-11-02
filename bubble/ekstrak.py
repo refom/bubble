@@ -25,17 +25,29 @@ def set_strukdat(teks, path):
 		pickle.dump(r, kf)
 
 
-def get_data():
+def get_data(keyword):
+	# Ambil keyword
+	keyword = re.sub("[\W_]", "", keyword.lower())
+
+	# Load keyword
 	with open(KEYWORD_FILE, "rb") as kf:
 		r = pickle.load(kf)
-	keyword = AVL_Tree()
-	keyword.search(r, "ROOT")
+	
+	avlTree = AVL_Tree()
+	lokasi = []
+	# cari tiap keyword
+	for key in keyword:
+		dataNode = avlTree.search(r, key)
+		if dataNode:
+			lokasi = dataNode.loc + lokasi
+
+	return lokasi
 
 def parser_teks(teks):
 	x = ""
 	for i in teks:
 		x += f"{i.text} "
-	x = re.sub("[\W_]", " ", x.lower())
+	x = re.sub("[\W_]", "", x.lower())
 	return x.split()
 
 
