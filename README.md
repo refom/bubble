@@ -1,11 +1,12 @@
 # bubble
 
 ## Alur eksekusi
-> run.py => bubble/\__init__.py => bubble/routes.py => bubble/ekstrak.py => bubble/strukturdata.py
+> run.py => bubble/\_\_init__.py => bubble/routes.py => bubble/ekstrak.py => bubble/strukturdata.py
 
 ## Tester
-\* untuk mencoba struktur datanya saja, bisa menggunakan file bubble/uji_coba.py atau TESTER/uji_coba.py
-\* untuk mencoba bubblenya, install semua yang dibutuhkan di requirements.txt baru jalankan run.py
+untuk mencoba struktur datanya saja, bisa menggunakan file bubble/uji_coba.py atau TESTER/uji_coba.py
+
+untuk mencoba bubblenya, install semua yang dibutuhkan di requirements.txt baru jalankan run.py
 
 ## To do List
 1. buat interface delete
