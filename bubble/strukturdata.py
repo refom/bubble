@@ -145,7 +145,7 @@ class RedBlackTree(object):
 
 		if z == self.TNULL:
 			print("Cannot find key in the tree")
-			return
+			return "Delete False"
 
 		y = z
 		y_original_color = y.color
@@ -222,6 +222,7 @@ class RedBlackTree(object):
 					self.right_rotate(x.parent)
 					x = self.root
 		x.color = BLACK
+		return "Delete True"
 
 	def __rb_transplant(self, u, v):
 		if u.parent == None:
