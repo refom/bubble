@@ -3,7 +3,7 @@ import os
 from flask import render_template, url_for, request, redirect, flash
 from bubble import app
 from bubble.forms import Search
-from bubble.ekstrak import *
+from bubble.ekstrak import set_keyword, get_data, get_file, cek_key
 
 # Extension check
 ALLOWED_EXTENSIONS = set(['html'])
