@@ -1,45 +1,42 @@
 import os, pickle, re
-from bubble.strukturdata import AVL_Tree
+from bubble.strukturdata import RedBlackTree
 from bubble import app
 from bs4 import BeautifulSoup
 
 KEYWORD_FILE = os.path.join(app.root_path, "static", "keyword.dll")
+LOKASI_FILE = os.path.join(app.root_path, "static", "lokasi.dll")
 
 def set_strukdat(teks, path):
-	# Root = None
-	r = None
-	keyword = AVL_Tree()
 
 	# Check keyword file
 	if not os.path.exists(KEYWORD_FILE):
-		with open(KEYWORD_FILE, "wb") as kf:
-			pickle.dump(r, kf)
+		rbt = RedBlackTree()
 	else:
 		with open(KEYWORD_FILE, "rb") as kf:
-			r = pickle.load(kf)
+			rbt = pickle.load(kf)
 
 	for key in teks:
-		r = keyword.insert(r, key, path)
+		rbt.insert(key, path)
 
 	with open(KEYWORD_FILE, "wb") as kf:
-		pickle.dump(r, kf)
-
+		pickle.dump(rbt, kf)
 
 def get_data(keyword):
-	# Ambil keyword
+	# Ambil keyword dari search
 	keyword = re.sub("[\W_]", " ", keyword.lower())
 
-	# Load keyword
+	# Load keyword file
 	with open(KEYWORD_FILE, "rb") as kf:
-		r = pickle.load(kf)
-	
-	avlTree = AVL_Tree()
+		rbt = pickle.load(kf)
+
 	lokasi = []
 	# cari tiap keyword
 	for key in keyword.split():
-		dataNode = avlTree.search(r, key)
+		print(key)
+		dataNode = rbt.query(key)
 		if dataNode:
 			for lok in dataNode.loc:
+				print(lok)
 				if not lok in lokasi:
 					lok = os.path.basename(lok)
 					name = os.path.splitext(lok)
@@ -53,7 +50,6 @@ def parser_teks(teks):
 		x += f"{i.text} "
 	x = re.sub("[\W_]", " ", x.lower())
 	return x.split()
-
 
 def set_keyword(path):
 	# Parser isinya
@@ -69,9 +65,9 @@ def set_keyword(path):
 
 def cek_key():
 	with open(KEYWORD_FILE, "rb") as kf:
-		r = pickle.load(kf)
-	keyword = AVL_Tree()
+		rbt = pickle.load(kf)
 	keylist = []
-	return keyword.get_preOrder(r, "ROOT", keylist)
+	return rbt.get_preOrder(keylist)
 
-
+def	get_file():
+	pass
