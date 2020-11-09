@@ -19,7 +19,9 @@ def index():
 		# Kalau searchnya di pakai, disini search algoritmanya
 		keyword = form.keyword.data
 		data = get_data(keyword)
-		return render_template('home.html', form=form, datas=data)
+		if data:
+			return render_template('home.html', form=form, datas=data)
+		
 	return render_template('home.html', form=form)
 
 @app.route("/insert")
@@ -33,26 +35,35 @@ def upload_file():
 			flash('No file part')
 			return redirect(request.url)
 
+		# dibawah ini mengambil apa yang user upload. Filenya dalam bentuk list
 		files = request.files.getlist('files[]')
 
+		gagal = 0
+
+		# ini perulangan untuk mengambil file file yg diupload tadi
 		for file in files:
-			# Jika file sukses di upload, akan mengembalikan nilai True
+			# Pengecekan apakah filenya ada dan extensinya html atau tidak
 			if file and allowed_file(file.filename):
 				path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
 				file.save(path)
 				# INSERT / ADD filename
 				set_keyword(path)
-				flash('File(s) successfully uploaded. ')
 			# Jika file gagal di upload, akan mengembalikan nilai False
 			else:
-				flash('File(s) failed to uploaded. ')
+				gagal += 1
+
+		if gagal > 0:
+			flash(f'Ada {gagal} File(s) failed uploaded.')
+		else:
+			flash('File(s) successfully uploaded.')
 
 		return redirect(request.url)
 
 @app.route("/key", methods=['GET'])
 def cek_keyword():
 	keylist = cek_key()
-	return render_template('cek_keyword.html', keylist=keylist)
+	if keylist:
+		return render_template('cek_keyword.html', keylist=keylist)
 
 @app.route("/delete", methods=['GET', 'POST'])
 def delete():

@@ -1,5 +1,5 @@
 import os, pickle, re
-from bubble.strukturdata import RedBlackTree
+from bubble.strukturdata import AVL_Tree
 from bubble import app
 from bs4 import BeautifulSoup
 
@@ -10,33 +10,35 @@ def set_strukdat(teks, path):
 
 	# Check keyword file
 	if not os.path.exists(KEYWORD_FILE):
-		rbt = RedBlackTree()
+		avl = AVL_Tree()
 	else:
 		with open(KEYWORD_FILE, "rb") as kf:
-			rbt = pickle.load(kf)
+			avl = pickle.load(kf)
 
 	for key in teks:
-		rbt.insert(key, path)
+		avl.insert(key, path)
 
 	with open(KEYWORD_FILE, "wb") as kf:
-		pickle.dump(rbt, kf)
+		pickle.dump(avl, kf)
 
 def get_data(keyword):
 	# Ambil keyword dari search
 	keyword = re.sub("[\W_]", " ", keyword.lower())
 
-	# Load keyword file
+	# Cek apakah ada file keyword.dll
+	if not os.path.exists(KEYWORD_FILE):
+		return [["Tidak ada data, harap untuk mengisi data", ""]]
+
+	# Load file keyword.dll
 	with open(KEYWORD_FILE, "rb") as kf:
-		rbt = pickle.load(kf)
+		avl = pickle.load(kf)
 
 	lokasi = []
 	# cari tiap keyword
 	for key in keyword.split():
-		print(key)
-		dataNode = rbt.query(key)
+		dataNode = avl.query(key)
 		if dataNode:
 			for lok in dataNode.loc:
-				print(lok)
 				if not lok in lokasi:
 					lok = os.path.basename(lok)
 					name = os.path.splitext(lok)
@@ -64,10 +66,13 @@ def set_keyword(path):
 	set_strukdat(teks, path)
 
 def cek_key():
-	with open(KEYWORD_FILE, "rb") as kf:
-		rbt = pickle.load(kf)
-	keylist = []
-	return rbt.get_preOrder(keylist)
+
+	if os.path.exists(KEYWORD_FILE):
+		with open(KEYWORD_FILE, "rb") as kf:
+			avl = pickle.load(kf)
+		return avl.get_preOrder()
+	
+	return ["Tidak ada file"]
 
 def	get_file():
 	pass
