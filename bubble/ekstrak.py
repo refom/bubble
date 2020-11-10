@@ -6,7 +6,7 @@ KEYWORD_FILE = os.path.join(app.root_path, "static", "keyword.dll")
 # LOKASI_FILE = os.path.join(app.root_path, "static", "lokasi.dll")
 
 
-def set_strukdat(teks, dokumen_html):
+def set_strukdat(dokumen_html):
 
 	# Check keyword file
 	if not os.path.exists(KEYWORD_FILE):
@@ -15,7 +15,7 @@ def set_strukdat(teks, dokumen_html):
 		with open(KEYWORD_FILE, "rb") as kf:
 			bst = pickle.load(kf)
 
-	bst = bst.add(dokumen_html)
+	bst.add(dokumen_html)
 
 	if bst:
 		with open(KEYWORD_FILE, "wb") as kf:

@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 from bubble import app
-import os
+import os, re
 
 KEYWORD_FILE = os.path.join(app.root_path, "static", "keyword.dll")
 
@@ -45,7 +45,7 @@ class BS_Tree(object):
 
 		if self.root:
 			print(" Add = True ")
-			return self.root
+			return
 
 		print(" Add = False ")
 		return None
@@ -68,8 +68,9 @@ class BS_Tree(object):
 		elif key < node.key:
 			node.left = self.add_helper(node.left, key, dokumen_html)
 
-		# Kalau key lebih besar dari keynya node
-		node.right = self.add_helper(node.right, key, dokumen_html)
+		else:
+			# Kalau key lebih besar dari keynya node
+			node.right = self.add_helper(node.right, key, dokumen_html)
 
 		# kembalikan node
 		return node
@@ -108,7 +109,7 @@ class BS_Tree(object):
 
 	# Mengambil isi tree
 	def get_tree(self):
-		teks = ""
+		teks = " "
 		return self.get_tree_helper(self.root, teks)
 
 	# Mengembalikan nilai key tree
@@ -117,7 +118,7 @@ class BS_Tree(object):
 			teks = self.get_tree_helper(root.left, teks)
 			teks += f"{root.key}, "
 			teks = self.get_tree_helper(root.right, teks)
-			return teks
+		return teks
 
 
 
