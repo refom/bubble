@@ -1,50 +1,10 @@
 import os, pickle, re
-from bubble.strukturdata import AVL_Tree
+from bubble.strukturdata import BS_Tree
 from bubble import app
-from bs4 import BeautifulSoup
 
 KEYWORD_FILE = os.path.join(app.root_path, "static", "keyword.dll")
-LOKASI_FILE = os.path.join(app.root_path, "static", "lokasi.dll")
+# LOKASI_FILE = os.path.join(app.root_path, "static", "lokasi.dll")
 
-def set_strukdat(teks, path):
-
-	# Check keyword file
-	if not os.path.exists(KEYWORD_FILE):
-		avl = AVL_Tree()
-	else:
-		with open(KEYWORD_FILE, "rb") as kf:
-			avl = pickle.load(kf)
-
-	for key in teks:
-		avl.insert(key, path)
-
-	with open(KEYWORD_FILE, "wb") as kf:
-		pickle.dump(avl, kf)
-
-def get_data(keyword):
-	# Ambil keyword dari search
-	keyword = re.sub("[\W_]", " ", keyword.lower())
-
-	# Cek apakah ada file keyword.dll
-	if not os.path.exists(KEYWORD_FILE):
-		return [["Tidak ada data, harap untuk mengisi data", ""]]
-
-	# Load file keyword.dll
-	with open(KEYWORD_FILE, "rb") as kf:
-		avl = pickle.load(kf)
-
-	lokasi = []
-	# cari tiap keyword
-	for key in keyword.split():
-		dataNode = avl.query(key)
-		if dataNode:
-			for lok in dataNode.loc:
-				if not lok in lokasi:
-					lok = os.path.basename(lok)
-					name = os.path.splitext(lok)
-					lokasi.append([name[0], lok])
-
-	return lokasi
 
 def parser_teks(teks):
 	x = ""
@@ -53,26 +13,60 @@ def parser_teks(teks):
 	x = re.sub("[\W_]", " ", x.lower())
 	return x.split()
 
-def set_keyword(path):
-	# Parser isinya
-	with open(path, "r", encoding="utf8") as f:
-		soup = BeautifulSoup(f.read(), "html.parser")
-		x    = soup.find_all(["p", "title", "article"])
 
-	# Pembuatan keyword
-	teks = set(parser_teks(x))
+def set_strukdat(teks, dokumen_html):
 
-	# Memasukkan ke dalam struktur data
-	set_strukdat(teks, path)
+	# Check keyword file
+	if not os.path.exists(KEYWORD_FILE):
+		bst = BS_Tree()
+	else:
+		with open(KEYWORD_FILE, "rb") as kf:
+			bst = pickle.load(kf)
+
+	bst = bst.add(dokumen_html)
+
+	if bst:
+		with open(KEYWORD_FILE, "wb") as kf:
+			pickle.dump(bst, kf)
+
+
+def get_data(keyword):
+	# Ambil keyword dari search
+	keyword = re.sub("[\W_]", " ", keyword.lower())
+
+	# Cek apakah ada file keyword.dll
+	if not os.path.exists(KEYWORD_FILE):
+		return [["Tidak ada data, harap untuk mengupload data", ""]]
+
+	# Load file keyword.dll
+	with open(KEYWORD_FILE, "rb") as kf:
+		bst = pickle.load(kf)
+
+	data = []
+	# cari tiap keyword
+	for key in keyword.split():
+		node = bst.query(key)
+		if node:
+			for lokasi in node.lokasi:
+				if not lokasi in data:
+					lokasi = os.path.basename(lokasi)
+					judul  = os.path.splitext(lokasi)
+					data.append([judul[0], lokasi])
+
+	return data
+
 
 def cek_key():
-
+	# Cek jika ada file keyword
 	if os.path.exists(KEYWORD_FILE):
+		# memuat keyword file
 		with open(KEYWORD_FILE, "rb") as kf:
-			avl = pickle.load(kf)
-		return avl.get_preOrder()
+			bst = pickle.load(kf)
+		# mengembalikan tree
+		return bst.get_tree()
 	
-	return ["Tidak ada file"]
+	return "Tidak ada file"
 
-def	get_file():
-	pass
+
+# def	get_file():
+# 	pass
