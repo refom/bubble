@@ -1,17 +1,9 @@
 import os, pickle, re
-from bubble.strukturdata import BS_Tree
 from bubble import app
+from bubble.strukturdata import BS_Tree
 
 KEYWORD_FILE = os.path.join(app.root_path, "static", "keyword.dll")
 # LOKASI_FILE = os.path.join(app.root_path, "static", "lokasi.dll")
-
-
-def parser_teks(teks):
-	x = ""
-	for i in teks:
-		x += f"{i.text} "
-	x = re.sub("[\W_]", " ", x.lower())
-	return x.split()
 
 
 def set_strukdat(teks, dokumen_html):

@@ -1,9 +1,17 @@
 from bs4 import BeautifulSoup
 from bubble import app
-from ekstrak import parser_teks
 import os
 
 KEYWORD_FILE = os.path.join(app.root_path, "static", "keyword.dll")
+
+
+def parser_teks(teks):
+	x = ""
+	for i in teks:
+		x += f"{i.text} "
+	x = re.sub("[\W_]", " ", x.lower())
+	return x.split()
+
 
 class Node(object):
 	def __init__(self, key):

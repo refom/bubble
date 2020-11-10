@@ -5,7 +5,6 @@ from wtforms.validators import DataRequired
 
 class Search(FlaskForm):
 	keyword = StringField('Search', validators=[DataRequired()])
-	submit = SubmitField('Go')
 
 
 

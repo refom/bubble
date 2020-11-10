@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block navbar %}
-	<nav class="navbar fixed-top navbar-expand-md">
+	<nav class="navbar navbar-expand-md">
 		<ul class="nav">
 		  <li class="nav-item">
 		    <a class="nav-link" href="{{ url_for('add') }}">
@@ -14,27 +14,31 @@
 		</ul>
 		<nav class="navbar navbar-expand navbar-light bg-light">
 			<div class="nav navbar-nav">
-				<a class="nav-item nav-link" href="{{ url_for('cek_keyword') }}">Cek Keyword</a>
+				<a class="nav-item nav-link bg-clear" href="{{ url_for('cek_keyword') }}">Cek Keyword</a>
 			</div>
 		</nav>
 	</nav>
 {% endblock navbar %}
 
 {% block header %}
-    <div class="jumbotron jumbotron-fluid">
 	  <div class="container text-black text-center mt-4">
-	  	<h1 class="display-4">Bubble</h1>
+		<img class="display-4" >
+			<img src="{{ url_for('static', filename='logo.png') }}" class="img-fit" alt="title">
+		</img>
 	  	<form method="POST" action="">
 	  		{{ form.hidden_tag() }}
-		  	<div class="input-group mt-5">
-		  		{{ form.keyword(class="form-control", placeholder="Search") }}
+		  	<div class="input-group mt-5 search-width">
+		  		{{ form.keyword(class="form-control search-form", placeholder="Search") }}
 			  <div class="input-group-append">
-			  	{{ form.submit(class="btn btn-outline-secondary") }}
+				<span class="input-group-btn">
+					<button type="submit" class="btn btn-secondary search-btn" name="subm">
+						<i class="fa fa-search"></i>
+					</button>
+				</span>
 			  </div>
 			</div>
 		</form>
 	  </div>
-	</div>
 {% endblock header %}
 
 {% block content %}
