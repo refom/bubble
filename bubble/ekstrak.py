@@ -41,12 +41,11 @@ def get_data(keyword):
 		if node:
 			for lokasi in node.lokasi:
 				if not lokasi in data:
-					lokasi = os.path.basename(lokasi)
-					judul  = os.path.splitext(lokasi)
-					data.append([judul[0], lokasi])
+					link = os.path.basename(lokasi)
+					judul  = os.path.splitext(link)
+					data.append([judul[0], link])
 
 	return data
-
 
 def cek_key():
 	# Cek jika ada file keyword

@@ -32,7 +32,7 @@ class BS_Tree(object):
 	# Add / Bagian Parser
 	def add(self, dokumen_html):
 		# Parser isinya
-		with open(dokumen_html, "r", encoding="utf8") as f:
+		with open(dokumen_html, "rb") as f:
 			soup = BeautifulSoup(f.read(), "html.parser")
 			x    = soup.find_all(["p", "title", "article"])
 
@@ -44,10 +44,10 @@ class BS_Tree(object):
 			self.root = self.add_helper(self.root, key, dokumen_html)
 
 		if self.root:
-			print(" Add = True ")
+			# print(" Add = True ")
 			return
 
-		print(" Add = False ")
+		# print(" Add = False ")
 		return None
 	
 	# Add / Bagian memasukkan kedalam BST

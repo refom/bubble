@@ -1,28 +1,46 @@
 
 import os
 from flask import render_template, url_for, request, redirect, flash
+from flask_paginate import Pagination, get_page_args
 from bubble import app
 from bubble.forms import Search
 from bubble.ekstrak import set_strukdat, get_data, cek_key
 
+data_temp = []
+
 # Extension check
-ALLOWED_EXTENSIONS = set(['html'])
+ALLOWED_EXTENSIONS = set(['html', 'htm'])
 def allowed_file(filename):
 	return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def get_per_data(data, offset=0, per_page=10):
+    return data[offset: offset + per_page]
 
 # Route
 @app.route("/", methods=['GET', 'POST'])
 def index():
 	form = Search()
-	if request.method == 'POST':
-		# Kalau searchnya di pakai, disini search algoritmanya
+	if request.method == "POST":
 		keyword = form.keyword.data
-		data = get_data(keyword)
-		if data:
-			return render_template('home.html', form=form, datas=data)
-		
+		if data_temp:
+			data_temp.clear()
+		data_temp.append(get_data(keyword))
+		return redirect(url_for('search'))
+
 	return render_template('home.html', form=form)
+
+@app.route("/search", methods=['GET', 'POST'])
+def search():
+	if data_temp:
+		data = data_temp[0]
+		page, per_page, offset = get_page_args(page_parameter='page', per_page_parameter='per_page', )
+		pagination_data = get_per_data(data, offset=offset, per_page=per_page)
+		pagination = Pagination(page=page, per_page=per_page, total=len(data), css_framework='bootstrap4')
+		return render_template('search.html',
+								data=pagination_data,
+								pagination=pagination)
+	return render_template('search.html')
+
 
 @app.route("/add")
 def add():
@@ -53,6 +71,7 @@ def upload_file():
 
 			# Jika file gagal di upload, akan mengembalikan nilai False
 			else:
+				print(" Add = False")
 				gagal += 1
 
 		if gagal > 0:
