@@ -3,7 +3,6 @@ from bubble import app
 from bubble.strukturdata import BS_Tree
 
 KEYWORD_FILE = os.path.join(app.root_path, "static", "keyword.dll")
-# LOKASI_FILE = os.path.join(app.root_path, "static", "lokasi.dll")
 
 
 def set_strukdat(dokumen_html):
@@ -21,14 +20,13 @@ def set_strukdat(dokumen_html):
 		with open(KEYWORD_FILE, "wb") as kf:
 			pickle.dump(bst, kf)
 
-
 def get_data(keyword):
 	# Ambil keyword dari search
 	keyword = re.sub("[\W_]", " ", keyword.lower())
 
 	# Cek apakah ada file keyword.dll
 	if not os.path.exists(KEYWORD_FILE):
-		return [["Tidak ada data, harap untuk mengupload data", ""]]
+		return
 
 	# Load file keyword.dll
 	with open(KEYWORD_FILE, "rb") as kf:
@@ -54,7 +52,7 @@ def cek_key():
 		with open(KEYWORD_FILE, "rb") as kf:
 			bst = pickle.load(kf)
 		# mengembalikan tree
-		return bst.get_tree()
+		return bst.get_tree("preorder")
 	
 	return "Tidak ada file"
 

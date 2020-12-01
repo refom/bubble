@@ -21,12 +21,10 @@ def get_per_data(data, offset=0, per_page=10):
 def index():
 	form = Search()
 	if request.method == "POST":
-		keyword = form.keyword.data
 		if data_temp:
 			data_temp.clear()
-		data_temp.append(get_data(keyword))
+		data_temp.append(get_data(form.keyword.data))
 		return redirect(url_for('search'))
-
 	return render_template('home.html', form=form)
 
 @app.route("/search", methods=['GET', 'POST'])
@@ -39,15 +37,10 @@ def search():
 		return render_template('search.html',
 								data=pagination_data,
 								pagination=pagination)
-	return render_template('search.html')
+	return render_template('search.html', data=[["False | No Data", "/"]])
 
-
-@app.route("/add")
+@app.route("/add", methods=['GET', 'POST'])
 def add():
-	return render_template('add.html')
-
-@app.route("/add", methods=['POST'])
-def upload_file():
 	if request.method == 'POST':
 		if 'files[]' not in request.files:
 			flash('No file part')
@@ -80,12 +73,12 @@ def upload_file():
 			flash('File(s) successfully uploaded.')
 
 		return redirect(request.url)
+	return render_template('add.html')
 
 @app.route("/key", methods=['GET'])
 def cek_keyword():
 	teks = cek_key()
-	if teks:
-		return render_template('cek_keyword.html', teks=teks)
+	return render_template('cek_keyword.html', teks=teks)
 
 @app.route("/delete", methods=['GET', 'POST'])
 def delete():
