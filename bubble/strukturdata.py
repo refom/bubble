@@ -1,12 +1,29 @@
 from bs4 import BeautifulSoup
-import os, re
 from time import process_time
+import os, re
 
 def parser_teks(teks, x=""):
 	for i in teks:
 		x += f"{i.text} "
 	x = re.sub("[\W_]", " ", x.lower())
 	return x.split()
+
+def parser_html(dokumen_html):
+	# Parser isinya
+	with open(dokumen_html, "rb") as f:
+		soup = BeautifulSoup(f.read(), "html.parser")
+		x    = soup.find_all(["p", "title", "article"])
+
+	# Pembuatan keyword
+	teks = set(parser_teks(x))
+	return teks
+
+def parser_link(link):
+	base = os.path.basename(link)
+	name = os.path.splitext(base)
+	name = name[0]
+	return base, name
+
 
 BLACK = 0
 RED = 1
@@ -42,7 +59,7 @@ class Node(object):
 
 	# Menambah value
 	def __add__(self, other):
-		self.value = self.value + other.value
+		self.add_value(other.value[0])
 
 
 class RedBlackTree(object):
@@ -66,7 +83,8 @@ class RedBlackTree(object):
 		self.NIL       = Node(0)
 		self.NIL.color = BLACK
 		self.root      = self.NIL
-	
+		self.lane      = None
+
 	# Minimum
 	def min(self, node):
 		while node.left != self.NIL:
@@ -140,6 +158,15 @@ class RedBlackTree(object):
 			teks += f"{node.key}, "
 		return teks
 
+	# Ambil panjang data
+	def get_len_data(self):
+		return self.len_data
+
+	# Cek lanenya
+	def check_lane(self):
+		if not self.lane:
+			self.lane = RBT_Lane()
+
 	# Print Tree
 	def print_tree(self):
 		self.print_tree_helper(self.root)
@@ -206,27 +233,34 @@ class RedBlackTree(object):
 		# print("[R] Rotate Right Done")
 
 
-	# Add / Bagian kesepakatan bersama
+	# Add (keyword) / Bagian kesepakatan bersama
 	def add(self, dokumen_html):
 		now = process_time()
 		# print("[A] Add Called")
-		# Parser isinya
-		with open(dokumen_html, "rb") as f:
-			soup = BeautifulSoup(f.read(), "html.parser")
-			x    = soup.find_all(["p", "title", "article"])
+		# Mendapatkan teks
+		teks      = parser_html(dokumen_html)
+		html_base, name = parser_link(dokumen_html)
 
-		# Pembuatan keyword
-		teks = set(parser_teks(x))
+		lane       = Node(html_base)
+		lane.left  = self.NIL
+		lane.right = self.NIL
+		lane.name  = name
 
 		for kata in teks:
+			# Masukkan kata ke dalam node lane
+			lane.add_value(kata)
+
 			# Buat kata menjadi node
 			new_node       = Node(kata)
-			new_node.add_value(dokumen_html)
+			new_node.add_value(lane)
 			new_node.left  = self.NIL
 			new_node.right = self.NIL
 			# print(new_node)
 			# Masukkan node ke dalam struktur data
 			self.add_helper(new_node)
+
+		self.check_lane()
+		self.lane.add_helper(lane)
 
 		# print("[A-] Add Done")
 		after = process_time()
@@ -254,7 +288,7 @@ class RedBlackTree(object):
 		
 		# Buat leaf sebagai parent dari new node
 		new_node.parent = lf
-
+		self.len_data += 1
 		""" Jika leafnya gak ada, maka new node adalah root.
 		Jika leafnya ada dan new node lebih kecil dari leaf maka anak kiri dari leaf adalah new node.
 		Berlaku sebaliknya """
@@ -288,11 +322,11 @@ class RedBlackTree(object):
 	# Add / Bagian pemeriksa apakah ada yang melanggar rule
 	def fix_add(self, node):
 		# print("[FA] Fix Add Called")
-		p = node.parent
 
 		""" Jika parentnya BLACK, maka tidak melanggar rule.
 		Selama parentnya RED, maka melanggar rule no.5 karena anaknya parent adalah RED """
-		while p.color == RED:
+		while node.parent.color == RED:
+			p = node.parent
 			""" Jika parent berada di kiri nenek, maka paman node berada di kanan nenek """
 			# PARENT<-NENEK (LEFT)
 			if p == p.parent.left:
@@ -308,7 +342,6 @@ class RedBlackTree(object):
 					p.parent.color = RED
 					p.color = y.color = BLACK
 					node = p.parent
-					p    = node.parent
 				else:
 					"""
 					2. Jika pamannya BLACK
@@ -335,7 +368,6 @@ class RedBlackTree(object):
 					p.parent.color = RED
 					p.color = y.color = BLACK
 					node = p.parent
-					p    = node.parent
 				else:
 					# NODE<-PARENT (LEFT)
 					if node == p.left:
@@ -375,7 +407,11 @@ class RedBlackTree(object):
 		return self.query_helper(node.right, kata)
 
 
+class RBT_Lane(RedBlackTree):
 
+	def __init__(self):
+		super().__init__()
 
-
+	def check_lane():
+		self.lane = None
 

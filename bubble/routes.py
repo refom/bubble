@@ -37,7 +37,7 @@ def search():
 		return render_template('search.html',
 								data=pagination_data,
 								pagination=pagination)
-	return render_template('search.html', data=[["False | No Data", "/"]])
+	return render_template('search.html')
 
 @app.route("/add", methods=['GET', 'POST'])
 def add():
