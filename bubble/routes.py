@@ -23,7 +23,9 @@ def index():
 	if request.method == "POST":
 		if data_temp:
 			data_temp.clear()
-		data_temp.append(get_data(form.keyword.data))
+		data = get_data(form.keyword.data)
+		if data:
+			data_temp.append(data)
 		return redirect(url_for('search'))
 	return render_template('home.html', form=form)
 
@@ -37,7 +39,7 @@ def search():
 		return render_template('search.html',
 								data=pagination_data,
 								pagination=pagination)
-	return render_template('search.html')
+	return render_template('search.html', data=["No data Found"])
 
 @app.route("/add", methods=['GET', 'POST'])
 def add():

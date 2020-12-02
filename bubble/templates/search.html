@@ -11,9 +11,9 @@
 	{% if data %}
         <div class="list-group">
             {% for lane in data %}
-                <a href="{{ url_for("static", filename="html/{0}".format(lane.key)) }}" class="list-group-item list-group-item-action list-group-item-info">
+                <a href="{{ url_for("static", filename="html/{0}".format(lane)) }}" class="list-group-item list-group-item-action list-group-item-info">
                     <div class="d-flex w-100 justify-content-between">
-                    <h5 class="mb-1">{{ lane.name }}</h5>
+                    <h5 class="mb-1">{{ lane }}</h5>
                     </div>
                 </a>
             {% endfor %}

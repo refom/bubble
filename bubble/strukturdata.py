@@ -59,7 +59,7 @@ class Node(object):
 
 	# Menambah value
 	def __add__(self, other):
-		self.add_value(other.value[0])
+		self.value = self.value + other.value
 
 
 class RedBlackTree(object):
@@ -77,6 +77,7 @@ class RedBlackTree(object):
 	y        = Paman
 	p.parent = Nenek
 	lf       = Leaf
+	lane     = File HTML
 	"""
 	def __init__(self):
 		self.len_data  = 0
@@ -162,10 +163,13 @@ class RedBlackTree(object):
 	def get_len_data(self):
 		return self.len_data
 
+	# Ambil root
+	def get_root(self):
+		return self.root
+
 	# Cek lanenya
 	def check_lane(self):
-		if not self.lane:
-			self.lane = RBT_Lane()
+		self.lane = RBT_Lane()
 
 	# Print Tree
 	def print_tree(self):
@@ -247,19 +251,18 @@ class RedBlackTree(object):
 		lane.name  = name
 
 		for kata in teks:
-			# Masukkan kata ke dalam node lane
-			lane.add_value(kata)
-
 			# Buat kata menjadi node
 			new_node       = Node(kata)
-			new_node.add_value(lane)
+			new_node.add_value(html_base)
 			new_node.left  = self.NIL
 			new_node.right = self.NIL
+
 			# print(new_node)
 			# Masukkan node ke dalam struktur data
-			self.add_helper(new_node)
+			self.add_helper(new_node, lane)
 
-		self.check_lane()
+		if self.lane == None:
+			self.check_lane()
 		self.lane.add_helper(lane)
 
 		# print("[A-] Add Done")
@@ -268,7 +271,7 @@ class RedBlackTree(object):
 		return
 
 	# Add / Bagian BST
-	def add_helper(self, new_node):
+	def add_helper(self, new_node, lane):
 		# print("[AH] Add Helper Called")
 		lf   = None
 		node = self.root
@@ -279,6 +282,8 @@ class RedBlackTree(object):
 			if new_node == node:
 				node + new_node
 				new_node = None
+				# Masukkan node ke dalam lane
+				lane.add_value(node)
 				# print("[i] kata yang sama ditemukan")
 				return
 			elif new_node < node:
@@ -288,6 +293,8 @@ class RedBlackTree(object):
 		
 		# Buat leaf sebagai parent dari new node
 		new_node.parent = lf
+		# Masukkan new node ke dalam lane
+		lane.add_value(new_node)
 		self.len_data += 1
 		""" Jika leafnya gak ada, maka new node adalah root.
 		Jika leafnya ada dan new node lebih kecil dari leaf maka anak kiri dari leaf adalah new node.
@@ -390,7 +397,21 @@ class RedBlackTree(object):
 
 	# Query / Bagian kesepakatan bersama
 	def query(self, kata):
-		return self.query_helper(self.root, kata)
+		data = []
+		if type(kata) == list:
+			for i in kata:
+				data = self.query_get_file(i, data)
+		elif type(kata) == str:
+			data = self.query_get_file(kata, data)
+
+		return data
+
+	# Query / Bagian pengatur datanya
+	def query_get_file(self, kata, data):
+		temp = self.query_helper(self.root, kata)
+		if temp != self.NIL:
+			data = list(set(data + temp.value))
+		return data
 
 	# Query / Bagian pencariannya
 	def query_helper(self, node, kata):
@@ -407,11 +428,52 @@ class RedBlackTree(object):
 		return self.query_helper(node.right, kata)
 
 
-class RBT_Lane(RedBlackTree):
+	# Delete / Bagian kesepakatan bersama
+	""" 
+		Kondisi Delete BST
+	1. Jika leaf, tinggal delete
+	2. Jika punya 1 anak, node yg dihapus, hapus, anaknya naik
+	3. Jika punya 2 anak, cari successor, trus gantikan node yang dihapus dengan successor
+	"""
 
+class RBT_Lane(RedBlackTree):
 	def __init__(self):
 		super().__init__()
 
-	def check_lane():
-		return
+	def add_helper(self, new_node):
+		lf   = None
+		node = self.root
+		
+		while node != self.NIL:
+			lf = node
+			if new_node == node:
+				node + new_node
+				new_node = None
+				return
+			elif new_node < node:
+				node = node.left
+			else:
+				node = node.right
+		
+		new_node.parent = lf
+		self.len_data += 1
+
+		if lf is None:
+			self.root = new_node
+		elif new_node < lf:
+			lf.left = new_node
+		else:
+			lf.right = new_node
+
+		if new_node.parent is None:
+			node.color = BLACK
+			return
+		
+		if new_node.parent.parent is None:
+			return
+
+		self.fix_add(new_node)
+
+	def check_lane(self):
+		self.lane = 1
 

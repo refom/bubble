@@ -38,14 +38,7 @@ def get_data(keyword):
 	with open(KEYWORD_FILE, "rb") as kf:
 		kata = pickle.load(kf)
 
-	data = []
-	# cari tiap keyword
-	for i in keyword.split():
-		node = kata.query(i)
-		if node != kata.NIL:
-			for lane in node.value:
-				if not lane in data:
-					data.append(lane)
+	data = kata.query(keyword.split())
 
 	return data
 
