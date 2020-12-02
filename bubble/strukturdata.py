@@ -413,5 +413,5 @@ class RBT_Lane(RedBlackTree):
 		super().__init__()
 
 	def check_lane():
-		self.lane = None
+		return
 
