@@ -106,7 +106,7 @@ class RedBlackTree(object):
 
 		# Kondisi 2, Anak kanan kosong
 		p = node.parent
-		while p != self.NIL and node == p.right:
+		while p != None and node == p.right:
 			node = p
 			p    = p.parent
 		return p
@@ -119,7 +119,7 @@ class RedBlackTree(object):
 
 		# Kondisi 2, Anak kiri kosong
 		p = node.parent
-		while p != self.NIL and node == p.left:
+		while p != None and node == p.left:
 			node = p
 			p    = p.parent
 		return p
@@ -167,6 +167,18 @@ class RedBlackTree(object):
 	def get_root(self):
 		return self.root
 
+	# Ambil semua data
+	def get_tree_all(self):
+		data = []
+		return self.get_tree_all_helper(self.root, data)
+
+	def get_tree_all_helper(self, node, data):
+		if node != self.NIL:
+			data = self.get_tree_all_helper(node.left, data)
+			data.append(node.key)
+			data = self.get_tree_all_helper(node.right, data)
+		return data
+
 	# Cek lanenya
 	def check_lane(self):
 		self.lane = RBT_Lane()
@@ -204,8 +216,8 @@ class RedBlackTree(object):
 		Jika parent adalah None, maka a jadi root
 		Jika node adalah anak kiri parent, maka anak kiri parent menjadi a.
 		Berlaku sebaliknya """
-		a.parent    = p
-		if p is None:
+		a.parent = p
+		if p == None:
 			self.root = a
 		elif node == p.left:
 			p.left = a
@@ -224,14 +236,14 @@ class RedBlackTree(object):
 		if a.right != self.NIL:
 			a.right.parent = node
 
-		if p is None:
+		a.parent    = p
+		if p == None:
 			self.root = a
 		elif node == p.left:
 			p.left = a
 		else:
 			p.right = a
 
-		a.parent    = p
 		node.parent = a
 		a.right     = node
 		# print("[R] Rotate Right Done")
@@ -245,10 +257,12 @@ class RedBlackTree(object):
 		teks      = parser_html(dokumen_html)
 		html_base, name = parser_link(dokumen_html)
 
+		if self.lane == None:
+			self.check_lane()
+
 		lane       = Node(html_base)
-		lane.left  = self.NIL
-		lane.right = self.NIL
-		lane.name  = name
+		lane.left  = self.lane.NIL
+		lane.right = self.lane.NIL
 
 		for kata in teks:
 			# Buat kata menjadi node
@@ -261,8 +275,6 @@ class RedBlackTree(object):
 			# Masukkan node ke dalam struktur data
 			self.add_helper(new_node, lane)
 
-		if self.lane == None:
-			self.check_lane()
 		self.lane.add_helper(lane)
 
 		# print("[A-] Add Done")
@@ -296,10 +308,10 @@ class RedBlackTree(object):
 		# Masukkan new node ke dalam lane
 		lane.add_value(new_node)
 		self.len_data += 1
-		""" Jika leafnya gak ada, maka new node adalah root.
+		""" Jika leafnya kosong, maka new node adalah root.
 		Jika leafnya ada dan new node lebih kecil dari leaf maka anak kiri dari leaf adalah new node.
 		Berlaku sebaliknya """
-		if lf is None:
+		if lf == None:
 			self.root = new_node
 		elif new_node < lf:
 			lf.left = new_node
@@ -307,19 +319,19 @@ class RedBlackTree(object):
 			lf.right = new_node
 
 		""" Kondisi Root
-		Jika parentnya gak ada, berarti dia root.
+		Jika parentnya kosong, berarti parent adalah root.
 		Sesuai rule no.2 Root adalah BLACK """
-		if new_node.parent is None:
+		if new_node.parent == None:
 			node.color = BLACK
 			# print("[i] new_node adalah root")
 			return
 		
 		""" Kondisi Nenek
-		Jika neneknya tidak ada, maka bentuk treenya hanya berisi 2/3 data yaitu root dan root.left atau root.right.
+		Jika nenek kosong, maka bentuk treenya hanya berisi 2/3 data yaitu root dan root.left atau root.right.
 		Pastinya root adalah BLACK, dan anaknya adalah RED.
 		Bentuk ini tidaklah melanggar rule """
-		if new_node.parent.parent is None:
-			# print("[i] nenek new_node tidak ada ")
+		if new_node.parent.parent == None:
+			# print("[i] nenek new_node kosong ")
 			return
 
 		# Periksa jika ada yang melanggar rule
@@ -428,20 +440,168 @@ class RedBlackTree(object):
 		return self.query_helper(node.right, kata)
 
 
-	# Delete / Bagian kesepakatan bersama
+	""" Transplant / Mengganti node
+	x = node yang akan digantikan
+	y = node yang menggantikan x """
+	def transplant(self, x, y):
+		if x.parent == None:
+			self.root = y
+		elif x == x.parent.left:
+			x.parent.left = y
+		else:
+			x.parent.right = y
+		y.parent = x.parent
+
 	""" 
 		Kondisi Delete BST
-	1. Jika leaf, tinggal delete
-	2. Jika punya 1 anak, node yg dihapus, hapus, anaknya naik
-	3. Jika punya 2 anak, cari successor, trus gantikan node yang dihapus dengan successor
+	1. Jika node adalah leaf, langsung delete
+	2. Jika punya 1 anak, anaknya menggantikan node
+	3. Jika punya 2 anak, cari successor, lalu successor menggantikan node
+
+	node = node yang mau dihapus
+	x    = anak
+	suc  = successor
+	w    = saudara si x
 	"""
+	# Delete / Bagian kesepakatan bersama
+	def delete(self, dokumen_html):
+		lane = self.lane.query_helper(self.lane.root, dokumen_html)
+		for keyword in lane.value:
+			if dokumen_html in keyword.value:
+				keyword.value.remove(dokumen_html)
+			
+			if not keyword.value:
+				self.delete_helper(keyword)
+
+		self.lane.delete_helper(lane)
+
+	def delete_helper(self, node):
+		# Simpan color node untuk di periksa apakah akan terjadi DOUBLE BLACK atau tidak
+		node_color_awal = node.color
+
+		"""
+		Kondisi 1
+			Jika node adalah leaf, langsung diganti dengan NIL.
+		Kondisi 2
+			Jika punya 1 anak, anaknya menggantikan node.
+		Kondisi 1 bisa diabaikan karena bisa di gantikan oleh Kondisi 2
+		Jika node adalah leaf, maka salah satu anaknya (yang merupakan NIL) menggantikan node
+		"""
+		if node.left == self.NIL:
+			x = node.right
+			self.transplant(node, x)
+		elif node.right == self.NIL:
+			x = node.left
+			self.transplant(node, x)
+
+		# Kondisi 3
+		else:
+			"""
+			Alasan tidak menggunakan fungsi successor secara langsung,
+			karena pada kondisi 3, sudah diketahui bahwa node memiliki 2 anak
+			sehingga tidak perlu lagi di periksa pada fungsi successor
+			"""
+			suc = self.min(node.right)
+			# Karena node digantikan oleh successor, jadi color successor disimpan
+			node_color_awal = suc.color
+			x = suc.right
+
+			"""
+			Jika successor bukan anak kanan dari node atau parent successor bukanlah node
+			Maka transplant successor dengan x, sehingga successor bebas
+			Lalu 
+			"""
+			if suc.parent != node:
+				self.transplant(suc, x)
+				suc.right = node.right
+				suc.right.parent = suc
+			
+			self.transplant(node, suc)
+			suc.left = node.left
+			suc.left.parent = suc
+			suc.color = node.color
+		
+		if node_color_awal == BLACK:
+			self.fix_delete(x)
+
+	def fix_delete(self, x):
+		# Jika terjadi double dan x bukanlah root
+		while x != self.root and x.color == BLACK:
+			# Saudaranya di sebelah kanan
+			if x == x.parent.left:
+				w = x.parent.right
+
+				# Kondisi 2
+				# Jika warna w adalah RED
+				if w.color == RED:
+					# Switch Color w dengan parent
+					w.color = w.parent.color
+					w.parent.color = RED
+					# Rotate parent dengan w
+					self.rotate_left(w.parent)
+					# ganti reference w menjadi saudara x yang baru
+					w = x.parent.right
+
+				# disini color w pasti BLACK
+				# Kondisi 1
+				if w.left.color == BLACK and w.right.color == BLACK:
+					# Extra black ke parent, karena parentnya sudah pasti BLACK, jadi tidak perlu di tulis lagi
+					x = x.parent
+					w.color = RED
+				else:
+					# Kondisi 3
+					if w.right.color == BLACK:
+						# Switch color w dengan anak w terdekat dengan x
+						w.color = w.left.color
+						w.left.color = BLACK
+						# Rotasi w ke anak w terjauh dari x
+						self.rotate_right(w)
+						w = x.parent.right
+
+					# Kondisi 4
+					# Switch color w dengan p
+					w.color = x.parent.color
+					x.parent.color = BLACK
+					# Rotasi p ke x
+					self.rotate_left(x.parent)
+					# Extra black ke j
+					w.right.color = BLACK
+					""" Biasanya setelah kondisi 4, sudah tidak ada double black, jadi kita hentikan perulangan dengan cara x adalah root.
+					Ini juga disebut sebagai Kondisi 0 """
+					x = self.root
+			# Saudaranya disebelah kiri
+			else:
+				w = x.parent.left
+
+				if w.color == RED:
+					w.color = w.parent.color
+					w.parent.color = RED
+					self.rotate_right(w.parent)
+					w = x.parent.left
+
+				if w.left.color == BLACK and w.right.color == BLACK:
+					x = x.parent
+					w.color = RED
+				else:
+					if w.left.color == BLACK:
+						w.color = w.right.color
+						w.right.color = BLACK
+						self.rotate_left(w)
+						w = x.parent.left
+
+					w.color = x.parent.color
+					x.parent.color = BLACK
+					self.rotate_right(x.parent)
+					w.left.color = BLACK
+					x = self.root
+		x.color = BLACK
 
 class RBT_Lane(RedBlackTree):
 	def __init__(self):
 		super().__init__()
 
 	def add_helper(self, new_node):
-		lf   = None
+		lf   = self.NIL
 		node = self.root
 		
 		while node != self.NIL:
@@ -458,18 +618,18 @@ class RBT_Lane(RedBlackTree):
 		new_node.parent = lf
 		self.len_data += 1
 
-		if lf is None:
+		if lf == self.NIL:
 			self.root = new_node
 		elif new_node < lf:
 			lf.left = new_node
 		else:
 			lf.right = new_node
 
-		if new_node.parent is None:
+		if new_node.parent == self.NIL:
 			node.color = BLACK
 			return
 		
-		if new_node.parent.parent is None:
+		if new_node.parent.parent == self.NIL:
 			return
 
 		self.fix_add(new_node)

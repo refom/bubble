@@ -1,10 +1,5 @@
 {% extends "snippets/layout.html" %}
 
-{% block navbar %}
-	{% include "snippets/navbar-back.html" %}
-{% endblock navbar %}
-
-
 {% block content %}
 
 <div class="container margin-top-7">
@@ -18,7 +13,7 @@
                 </a>
             {% endfor %}
         </div>
-        <div class="container text-center margin-top-3">
+        <div class="container justify-content-center margin-top-3">
 		    {{ pagination.links }}
         </div>
 	{% endif %}

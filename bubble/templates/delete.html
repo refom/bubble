@@ -1,40 +1,31 @@
 {% extends "snippets/layout.html" %}
 
-{% block navbar %}
-	{% include "snippets/navbar-back.html" %}
-{% endblock navbar %}
-
-{% block header %}
-    <div class="jumbotron jumbotron-fluid">
-	  <div class="container text-black text-center mt-4">
-	  	<h1 class="display-4">Bubble</h1>
-	  	<form method="POST" action="">
-	  		{{ form.hidden_tag() }}
-		  	<div class="input-group mt-5">
-		  		{{ form.keyword(class="form-control", placeholder="Search") }}
-			  <div class="input-group-append">
-			  	{{ form.submit(class="btn btn-outline-secondary") }}
-			  </div>
-			</div>
-		</form>
-	  </div>
-	</div>
-{% endblock header %}
 
 {% block content %}
-<div class="container">
-	{% if datas %}
-		{% for data in datas %}
-			<div class="card">
-				<div class="card-body text-center">
-					<h4 class="card-title">
-						{{ data }}
-					</h4>
-				</div>
-			</div>
-		{% endfor %}
+<form method="POST" action="">
+<div class="container margin-top-7">
+	<button type="submit" class="btn btn-outline-info" name="button" value="get">Get File</button>
+</div>
+</form>
+
+
+<div class="container margin-top-7">
+	{% if data %}
+        <div class="list-group">
+            {% for lane in data %}
+                <a href="{{ url_for("static", filename="html/{0}".format(lane)) }}" class="list-group-item list-group-item-action list-group-item-info">
+                    <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">{{ lane }}</h5>
+					<button type="submit" class="badge badge-danger" name="delete" value="{{lane}}">Delete</a>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+        <div class="container justify-content-center margin-top-3">
+		    {{ pagination.links }}
+        </div>
 	{% endif %}
 </div>
-{% endblock content %}
 
+{% endblock content %}
 

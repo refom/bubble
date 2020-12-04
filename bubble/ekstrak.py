@@ -11,20 +11,28 @@ class NoData(object):
 
 no_data = NoData()
 
+def load_file():
+	with open(KEYWORD_FILE, "rb") as kf:
+		kata = pickle.load(kf)
+
+	return kata
+
+def save_file(kata):
+	with open(KEYWORD_FILE, "wb") as kf:
+		pickle.dump(kata, kf)
+
 def set_strukdat(dokumen_html):
 
 	# Check keyword file
 	if not os.path.exists(KEYWORD_FILE):
 		kata = RedBlackTree()
 	else:
-		with open(KEYWORD_FILE, "rb") as kf:
-			kata = pickle.load(kf)
+		kata = load_file()
 
 	kata.add(dokumen_html)
 
 	if kata:
-		with open(KEYWORD_FILE, "wb") as kf:
-			pickle.dump(kata, kf)
+		save_file(kata)
 
 def get_data(keyword):
 	# Ambil keyword dari search
@@ -35,8 +43,7 @@ def get_data(keyword):
 		return [no_data]
 
 	# Load file keyword.dll
-	with open(KEYWORD_FILE, "rb") as kf:
-		kata = pickle.load(kf)
+	kata = load_file()
 
 	data = kata.query(keyword.split())
 
@@ -45,14 +52,16 @@ def get_data(keyword):
 def cek_key():
 	# Cek jika ada file keyword
 	if os.path.exists(KEYWORD_FILE):
-		# memuat keyword file
-		with open(KEYWORD_FILE, "rb") as kf:
-			kata = pickle.load(kf)
+		kata = load_file()
 		# mengembalikan tree
 		return kata.get_tree("inorder")
 	
 	return "Tidak ada file"
 
+def get_file():
+	if os.path.exists(KEYWORD_FILE):
+		kata = load_file()
+		return kata.lane.get_tree_all()
+	
+	return ["Tidak ada file"]
 
-# def	get_file():
-# 	pass

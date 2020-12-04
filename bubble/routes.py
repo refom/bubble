@@ -4,7 +4,7 @@ from flask import render_template, url_for, request, redirect, flash
 from flask_paginate import Pagination, get_page_args
 from bubble import app
 from bubble.forms import Search
-from bubble.ekstrak import set_strukdat, get_data, cek_key
+from bubble.ekstrak import set_strukdat, get_data, cek_key, get_file
 
 data_temp = []
 
@@ -16,13 +16,16 @@ def allowed_file(filename):
 def get_per_data(data, offset=0, per_page=10):
     return data[offset: offset + per_page]
 
+def check_data_temp():
+	if data_temp:
+		data_temp.clear()
+
 # Route
 @app.route("/", methods=['GET', 'POST'])
 def index():
 	form = Search()
 	if request.method == "POST":
-		if data_temp:
-			data_temp.clear()
+		check_data_temp()
 		data = get_data(form.keyword.data)
 		if data:
 			data_temp.append(data)
@@ -84,11 +87,23 @@ def cek_keyword():
 
 @app.route("/delete", methods=['GET', 'POST'])
 def delete():
-	# Mengambil list file
-	datas = get_file()
 	if request.method == 'POST':
-		# Jika file yang akan dihapus dipilih
-		pass
-	return render_template('delete.html', datas=data)
+		if request.form['button'] == "get":
+			check_data_temp()
+			data = get_file()
+			if data:
+				data_temp.append(data)
+			return redirect(request.url)
+
+	if data_temp:
+		data = data_temp[0]
+		page, per_page, offset = get_page_args(page_parameter='page', per_page_parameter='per_page', )
+		pagination_data = get_per_data(data, offset=offset, per_page=per_page)
+		pagination = Pagination(page=page, per_page=per_page, total=len(data), css_framework='bootstrap4')
+		return render_template('delete.html',
+								data=pagination_data,
+								pagination=pagination)
+	return render_template('delete.html')
+
 
 
