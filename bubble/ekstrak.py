@@ -49,15 +49,6 @@ def get_data(keyword):
 
 	return data
 
-def cek_key():
-	# Cek jika ada file keyword
-	if os.path.exists(KEYWORD_FILE):
-		kata = load_file()
-		# mengembalikan tree
-		return kata.get_tree("inorder")
-	
-	return "Tidak ada file"
-
 def get_file():
 	if os.path.exists(KEYWORD_FILE):
 		kata = load_file()
@@ -65,3 +56,49 @@ def get_file():
 	
 	return ["Tidak ada file"]
 
+def delete_file(filename):
+	if os.path.exists(KEYWORD_FILE):
+		kata = load_file()
+		kata.delete(filename)
+	
+	save_file(kata)
+
+def checking(param):
+	if os.path.exists(KEYWORD_FILE):
+		kata = load_file()
+
+		if param == "root":
+			root = kata.get_root()
+			return f"Key = {root.key}, color = {root.color}, Left Child = {root.left.key}, Right Child = {root.right.key}, Parent = {root.parent}"
+
+		if param == "successor":
+			node = kata.successor(kata.root)
+			return f"Successor from root = {node.key}"
+
+		if param == "predecessor":
+			node = kata.predecessor(kata.root)
+			return f"Predecessor from root = {node.key}"
+
+		if param == "inorder":
+			return kata.get_tree("inorder")
+
+		if param == "preorder":
+			return kata.get_tree("preorder")
+
+		if param == "postorder":
+			return kata.get_tree("postorder")
+
+		if param == "len":
+			banyak = kata.get_len_data()
+			return f"Banyak Data = {banyak}"
+
+		if param == "min":
+			node = kata.min(kata.root)
+			return f"Minimum from root = {node.key}"
+
+		if param == "max":
+			node = kata.max(kata.root)
+			return f"Maximum from root = {node.key}"
+		
+
+	return "Nothing in here"

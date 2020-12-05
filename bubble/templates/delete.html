@@ -13,12 +13,14 @@
 	{% if data %}
         <div class="list-group">
             {% for lane in data %}
-                <a href="{{ url_for("static", filename="html/{0}".format(lane)) }}" class="list-group-item list-group-item-action list-group-item-info">
-                    <div class="d-flex w-100 justify-content-between">
-                    <h5 class="mb-1">{{ lane }}</h5>
-					<button type="submit" class="badge badge-danger" name="delete" value="{{lane}}">Delete</a>
-                    </div>
-                </a>
+                <div class="d-flex w-100 justify-content-between">
+                    <span class="list-group-item list-group-item-action list-group-item-info">
+                        <h5 class="mb-1">{{ lane }}</h5>
+                        <form method="POST" action="">
+                            <button type="submit" class="badge badge-danger" name="button" value="{{lane}}">Delete</button>
+                        </form>
+                    </span>
+                </div>
             {% endfor %}
         </div>
         <div class="container justify-content-center margin-top-3">

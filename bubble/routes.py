@@ -4,7 +4,7 @@ from flask import render_template, url_for, request, redirect, flash
 from flask_paginate import Pagination, get_page_args
 from bubble import app
 from bubble.forms import Search
-from bubble.ekstrak import set_strukdat, get_data, cek_key, get_file
+from bubble.ekstrak import set_strukdat, get_data, get_file, delete_file, checking
 
 data_temp = []
 
@@ -80,20 +80,30 @@ def add():
 		return redirect(request.url)
 	return render_template('add.html')
 
-@app.route("/key", methods=['GET'])
-def cek_keyword():
-	teks = cek_key()
-	return render_template('cek_keyword.html', teks=teks)
+@app.route("/key/<param>", methods=['GET'])
+def check(param):
+	if param:
+		teks = checking(param)
+		return render_template('check.html', param=param, teks=teks)
+	return render_template('check.html')
 
 @app.route("/delete", methods=['GET', 'POST'])
 def delete():
 	if request.method == 'POST':
-		if request.form['button'] == "get":
-			check_data_temp()
-			data = get_file()
-			if data:
-				data_temp.append(data)
-			return redirect(request.url)
+		for key, value in request.form.items():
+			if key == "button":
+				if value == "get":
+					check_data_temp()
+					data = get_file()
+					if data:
+						data_temp.append(data)
+					return redirect(request.url)
+				else:
+					delete_file(value)
+					if value in data_temp[0]:
+						data_temp[0].remove(value)
+						os.remove(os.path.join(app.config['UPLOAD_FOLDER'], value))
+					return redirect(request.url)
 
 	if data_temp:
 		data = data_temp[0]
