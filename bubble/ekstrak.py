@@ -4,13 +4,6 @@ from bubble.strukturdata import RedBlackTree
 
 KEYWORD_FILE = os.path.join(app.root_path, "static", "keyword.dll")
 
-class NoData(object):
-	def __init__(self):
-		self.key = "../.."
-		self.name = "No Data Found"
-
-no_data = NoData()
-
 def load_file():
 	with open(KEYWORD_FILE, "rb") as kf:
 		kata = pickle.load(kf)
@@ -40,7 +33,7 @@ def get_data(keyword):
 
 	# Cek apakah ada file keyword.dll
 	if not os.path.exists(KEYWORD_FILE):
-		return [no_data]
+		return ["No Data Found"]
 
 	# Load file keyword.dll
 	kata = load_file()
@@ -100,5 +93,4 @@ def checking(param):
 			node = kata.max(kata.root)
 			return f"Maximum from root = {node.key}"
 		
-
 	return "Nothing in here"

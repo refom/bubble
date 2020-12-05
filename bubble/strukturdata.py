@@ -18,13 +18,6 @@ def parser_html(dokumen_html):
 	teks = set(parser_teks(x))
 	return teks
 
-def parser_link(link):
-	base = os.path.basename(link)
-	name = os.path.splitext(base)
-	name = name[0]
-	return base, name
-
-
 BLACK = 0
 RED = 1
 
@@ -246,7 +239,7 @@ class RedBlackTree(object):
 		now = process_time()
 		# Mendapatkan teks
 		teks      = parser_html(dokumen_html)
-		html_base, name = parser_link(dokumen_html)
+		html_base = os.path.basename(dokumen_html)
 
 		if self.lane == None:
 			self.check_lane()
