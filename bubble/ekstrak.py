@@ -1,4 +1,5 @@
 import os, pickle, re
+from time import process_time
 from bubble import app
 from bubble.strukturdata import RedBlackTree
 
@@ -37,10 +38,19 @@ def get_data(keyword):
 
 	# Load file keyword.dll
 	kata = load_file()
-
+	
+	# Start time
+	starts = process_time()
+	
+	# Do search algorithm
 	data = kata.query(keyword.split())
 
-	return data
+	# End Time
+	ends = process_time()
+	# calculating time process
+	time_required = ends - starts
+
+	return data, time_required
 
 def get_file():
 	if os.path.exists(KEYWORD_FILE):

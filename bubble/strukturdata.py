@@ -384,12 +384,8 @@ class RedBlackTree(object):
 	# Query / Bagian kesepakatan bersama
 	def query(self, kata):
 		data = []
-		if type(kata) == list:
-			for i in kata:
-				data = self.query_get_file(i, data)
-		elif type(kata) == str:
-			data = self.query_get_file(kata, data)
-
+		for i in kata:
+			data = self.query_get_file(i, data)
 		return data
 
 	# Query / Bagian pengatur datanya

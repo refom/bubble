@@ -3,6 +3,9 @@
 {% block content %}
 
 <div class="container margin-top-7">
+    <div class="alert alert-secondary" role="alert">
+        Time Required {{ time }}
+    </div>
 	{% if data %}
         <div class="list-group">
             {% for lane in data %}

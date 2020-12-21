@@ -26,9 +26,10 @@ def index():
 	form = Search()
 	if request.method == "POST":
 		check_data_temp()
-		data = get_data(form.keyword.data)
+		data, time_required = get_data(form.keyword.data)
 		if data:
 			data_temp.append(data)
+			data_temp.append(time_required)
 		return redirect(url_for('search'))
 	return render_template('home.html', form=form)
 
@@ -41,8 +42,9 @@ def search():
 		pagination = Pagination(page=page, per_page=per_page, total=len(data), css_framework='bootstrap4')
 		return render_template('search.html',
 								data=pagination_data,
-								pagination=pagination)
-	return render_template('search.html', data=["No data Found"])
+								pagination=pagination,
+								time=data_temp[1])
+	return redirect(url_for('index'))
 
 @app.route("/add", methods=['GET', 'POST'])
 def add():
